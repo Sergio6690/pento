@@ -215,7 +215,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 def run(server_class=BaseHTTPServer.HTTPServer,
         handler_class=BaseHTTPServer.BaseHTTPRequestHandler):
-    server_address = ('0.0.0.0', 8000)
+    server_address = ('0.0.0.0', 8080)
     httpd = server_class(server_address, handler_class)
     httpd.serve_forever()
 
