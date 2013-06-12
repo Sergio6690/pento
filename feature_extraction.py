@@ -1,4 +1,5 @@
 import BaseHTTPServer
+from SocketServer import ThreadingMixIn
 import unittest
 import urlparse
 import soundex
@@ -216,7 +217,10 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.wfile.close()
 
 
-def run(server_class=BaseHTTPServer.HTTPServer,
+class MultiThreadedHTTPServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
+    pass
+
+def run(server_class=MultiThreadedHTTPServer,
         handler_class=BaseHTTPServer.BaseHTTPRequestHandler):
     server_address = ('0.0.0.0', 8080)
     httpd = server_class(server_address, handler_class)
