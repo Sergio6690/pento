@@ -197,20 +197,23 @@ def classify(email_id, sent_count = 0, received_count = 0, name = None):
 
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/plain")
-        self.end_headers()
-        path = self.path
-        if path.find('?') > 1:
-            params = dict(map(lambda x: x.split('='),path.split('?')[1].split('&')))
-            email = params.get('email')
-            print params
-            if email:
-                print email
-                result = classify(email,float(params.get('sent_count', 0)), float(params.get('received_count',0)), params.get('name'))
-                self.wfile.write(result)
-        self.wfile.write("")
-
+        try:
+            self.send_response(200)
+            self.send_header("Content-type", "text/plain")
+            self.end_headers()
+            path = self.path
+            if path.find('?') > 1:
+                params = dict(map(lambda x: x.split('='),path.split('?')[1].split('&')))
+                email = params.get('email')
+                print params
+                if email:
+                    print email
+                    result = classify(email,float(params.get('sent_count', 0)), float(params.get('received_count',0)), params.get('name'))
+                    self.wfile.write(result)
+            self.wfile.write("")
+        except:
+            self.wfile.write("")
+        self.wfile.close()
 
 
 def run(server_class=BaseHTTPServer.HTTPServer,
