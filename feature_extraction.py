@@ -191,10 +191,7 @@ def classify(email_id, sent_count = 0, received_count = 0, name = None):
     coeff = {"has_name":1.085958,"has_wrd":1.472036e-04,"has_any_name":3.376846e-01,"are_all_names":4.140926e-01,"has_any_dictionary_word":-3.370337e-01,"are_all_dictionary_words":-5.085958e-01,"is_group_email":-3.266195e+00,"is_common_email_host":1.662579e+00,"is_org_edu_tld":0.000000e+00,"domain_in_id_or_id_in_domain":-3.379769e-01,"has_number_in_id":-1.032386e-03,"has_subdomins":5.353531e-05,"sent":6.135196e-01,"recvd":-2.246330e-04,"has_name_given":5.085958e-01, "intercept":-1.016358}
     features = get_features(email_id,sent_count,received_count,name)
     features["intercept"] = 1
-    if reduce(add,map(lambda x: coeff[x]*features[x], coeff.keys()),0) > 0:
-        return "person"
-    else:
-        return "not a person"
+    return dict([(email_id, reduce(add,map(lambda x: coeff[x]*features[x], coeff.keys()),0))])
 
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_GET(self):
@@ -210,7 +207,8 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
                 if email:
                     print email
                     result = classify(email,float(params.get('sent_count', 0)), float(params.get('received_count',0)), params.get('name'))
-                    self.wfile.write(result)
+                    print json.dumps(result)
+                    self.wfile.write(json.dumps(result))
             self.wfile.write("")
         except:
             self.wfile.write("")
