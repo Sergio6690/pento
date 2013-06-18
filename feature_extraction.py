@@ -201,7 +201,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.end_headers()
             path = self.path
             if path.find('?') > 1:
-                params = dict(map(lambda x: x.split('='),path.split('?')[1].split('&')))
+                params = dict(map(lambda x: x.split('='),urlparse.unquote(path).split('?')[1].split('&')))
                 email = params.get('email')
                 print params
                 if email:
