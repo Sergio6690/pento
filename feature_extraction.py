@@ -1,7 +1,4 @@
-import BaseHTTPServer
-from SocketServer import ThreadingMixIn
 import unittest
-import urlparse
 import soundex
 from functools import partial
 import re
@@ -9,31 +6,30 @@ import json
 from math import log
 from operator import add
 import sys
-import os
 
 def read(fl):
     return map(lambda x: x.strip().lower(),open(fl).readlines())
 
 apply_soundex = partial(soundex.soundex,len=5)
 
-first_names_db  = read("top_first_names")
-last_names_db = read("top_last_names")
+first_names_db  = read("data/top_first_names")
+last_names_db = read("data/top_last_names")
 
 first_names_soundex = map(apply_soundex,first_names_db)
 last_names_soundex =  map(apply_soundex,last_names_db)
 
-verbs = read('verbs')
-nouns = read('nouns')
+verbs = read('data/verbs')
+nouns = read('data/nouns')
 plurals = map(lambda x: x+'s' , nouns)
 plurals = filter(lambda x: not x.endswith('ss'),plurals)
-adjec = read('adjectives')
-advbs = read('adverbs')
-other = read('otherwords')
+adjec = read('data/adjectives')
+advbs = read('data/adverbs')
+other = read('data/otherwords')
 allwrds = set(verbs + nouns + adjec + advbs + other + plurals)
 allwrds = filter(lambda x: len(x)>1, allwrds)
 allwrds.append("a")
-common_email_domains = set(read('common_email_domains'))
-group_email_domains = set(read("group_email_domains"))
+common_email_domains = set(read('data/common_email_domains'))
+group_email_domains = set(read("data/group_email_domains"))
 names = set(filter(lambda x: len(x)>2, first_names_db + last_names_db))
 
 #Utils
@@ -142,7 +138,7 @@ def get_features(email_id, sent, recd, name):
         words_in_id = id_words(id)
     fns = [has_name, has_wrd, has_any_name, are_all_names, has_any_dictionary_word, are_all_dictionary_words, is_group_email, is_common_email_host, is_org_edu_tld, is_info_me_tld, domain_in_id_or_id_in_domain, has_number_in_id, has_subdomins]
     features = dict(map(lambda x: (x.__name__, int(x(id, words_in_id, dom, tld, email_id))), fns))
-    print features
+    #print features
     features['sent'] = log(1+sent)
     features['recvd'] = log(1+recd)
     features['has_name_given'] = int(name != None)
@@ -154,7 +150,7 @@ def read_json(fl):
 
 def feature_extraction():
     global email, features
-    for email in read_json('testdata.json'):
+    for email in read_json('data/testdata.json'):
         try:
             email_id = email['email']
             sent = email["sent_count"]
@@ -165,7 +161,7 @@ def feature_extraction():
         except:
             pass
 
-    # for email in read_json('pos_json'):
+    # for email in read_json('samples/pos_json'):
     #     try:
     #         email_id = email['email']
     #         sent = email["sent_count"]
@@ -175,7 +171,7 @@ def feature_extraction():
     #         print features + ',1'
     #     except:
     #         pass
-    # for email in read_json('neg_json'):
+    # for email in read_json('samples/neg_json'):
     #     try:
     #         email_id = email['email']
     #         sent = email["sent_count"]
@@ -193,42 +189,11 @@ def classify(email_id, sent_count = 0, received_count = 0, name = None):
     features["intercept"] = 1
     return dict([(email_id, reduce(add,map(lambda x: coeff[x]*features[x], coeff.keys()),0))])
 
-class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
-    def do_GET(self):
-        try:
-            self.send_response(200)
-            self.send_header("Content-type", "text/plain")
-            self.end_headers()
-            path = self.path
-            if path.find('?') > 1:
-                params = dict(map(lambda x: x.split('='),urlparse.unquote(path).split('?')[1].split('&')))
-                email = params.get('email')
-                print params
-                if email:
-                    print email
-                    result = classify(email,float(params.get('sent_count', 0)), float(params.get('received_count',0)), params.get('name'))
-                    print json.dumps(result)
-                    self.wfile.write(json.dumps(result))
-            self.wfile.write("")
-        except:
-            self.wfile.write("")
-        self.wfile.close()
-
-
-class MultiThreadedHTTPServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
-    pass
-
-def run(server_class=MultiThreadedHTTPServer,
-        handler_class=BaseHTTPServer.BaseHTTPRequestHandler):
-    server_address = ('0.0.0.0', 8080)
-    httpd = server_class(server_address, handler_class)
-    httpd.serve_forever()
-
 if __name__ == '__main__':
-    run(handler_class=Handler)
     classify(*sys.argv[1:])
     #feature_extraction()
     #print classify("order.update@amazon.com")
+
 
 class TestUtils(unittest.TestCase):
 
