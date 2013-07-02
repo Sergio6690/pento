@@ -13,7 +13,7 @@ def classify_input_dict(email_data):
     except:
         return {email_data.get("email"):0}
 
-@parallelize
+#@parallelize
 def classify_list(emails):
     results = []
     for email in emails:
