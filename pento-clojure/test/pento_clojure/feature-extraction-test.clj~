@@ -1,0 +1,9 @@
+(ns pento-clojure.feature-extraction-test
+  (:require [clojure.test :refer :all]
+            [pento-clojure.feature-extraction :refer :all]))
+
+
+
+(deftest test-cleaning-id 
+  (testing "Stuff after + is removed in an email address"
+    (is (= 1 2))))

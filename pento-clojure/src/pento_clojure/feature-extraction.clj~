@@ -1,0 +1,33 @@
+(ns pento-clojure.feature-extraction)
+
+
+(defn load-file [data-fl]
+  )
+
+(defn soundex [str]
+  )
+
+(defn segment [combined-word dictionary]
+  )
+
+(defn split-camel-case [name]
+  )
+
+(defn is-in-index 
+  ([indx, test]
+     (is-in-index indx, test, false))
+  ([indx, test, use-soundex]
+     )
+  )
+
+(defn clean-id [id] 
+  )
+
+(defn id_words [id]
+  )
+
+# Feature computation
+
+
+
+
