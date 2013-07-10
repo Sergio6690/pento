@@ -137,10 +137,10 @@
    (some #(> (.indexOf domain %) -1) words)
    )))
 
-(defn has_number_in_id [{id :id}]
+(defn has-number-in-id [{id :id}]
   (boolean (re-find #"[0-9]" id)))
 
-(defn has_subdomins [{email :email}]
+(defn has-subdomins [{email :email}]
   (> (count (str/split (last (str/split email #"@")) #"\.")) 2))
 
 (defn clean-id [id]
@@ -164,12 +164,21 @@
   (let [parts (parse-email email)
         words (if name (str/split (str/lower-case name) #" ") 
                   (id-words (:id parts)))]
-    (merge parts {:words words})))
+    (merge parts {:words words :email email})))
 
+(defn to-int [bool]
+  (if bool 1 0))
 
-(defn get-features [email sent recd name] 
-  (let [input (get-feature-input email sent recd name)
-        features (map #(% input) [has-name, has-word has-any-name are-all-names has-any-word are-all-words is-group-email is-common-email-host is-org-edu-tld is-info-me-tld domain-in-id-or-id-in-domain])
-        ]
-    ))
+(def weights {:has-name 1.085958,:has-word 1.472036e-04,:has-any-name 3.376846e-01,:are-all-names 4.140926e-01,:has-any-word -3.370337e-01,:are-all-words -5.085958e-01,:is-group-email -3.266195e+00,:is-common-email-host 1.662579e+00,:is-org-edu-tld 0.000000e+00,:domain-in-id-or-id-in-domain -3.379769e-01,:has-number-in-id -1.032386e-03,:has-subdomins 5.353531e-05,:sent 6.135196e-01,:recvd -2.246330e-04,:has-name-given 5.085958e-01, :intercept -1.016358})
+
+(defn dot [v1 v2]
+  (apply + (map * v1 v2)))
+
+(defn classify [email sent recd name] 
+  (let [input (get-feature-input email name)
+        features (map #(to-int (% input)) [has-name, has-word has-any-name are-all-names has-any-word are-all-words is-group-email is-common-email-host is-org-edu-tld domain-in-id-or-id-in-domain has-number-in-id has-subdomins])
+        weights (map  weights [:has-name :has-word :has-any-name :are-all-names :has-any-word :are-all-words :is-group-email :is-common-email-host :is-org-edu-tld :domain-in-id-or-id-in-domain :has-number-in-id :has-subdomins :sent :recvd :has-name-given :intercept ])
+        all-features (merge features sent recd (if name 1 0) 1)
+        ]  (dot all-features weights)))
+          
 

@@ -81,10 +81,15 @@
     (is (= true (is-common-email-host {:domain "gmail"})))
     (is (= true (is-org-edu-tld {:tld "edu" :domain "gmail"})))
     (is (= true (is-info-me-tld {:domain "googlegroups" :tld "info"})))
-    (is (= true (domain-in-id-or-id-in-domain {:id "google" :domain "googlegroups" :words ["google"]})))
     (is (= true (domain-in-id-or-id-in-domain {:id "attuverse" :domain "att" :words ["attuverse" ]})))
 ))
 
 (deftest test-input-to-features 
   (testing "input to features"
-    (is (= {:id "karthik" :domain "mpg" :tld "de" :words ["karthik"]} (get-feature-input "karthik@kyb.tuebingen.mpg.de" nil)))))
+    (is (= {:id "karthik" :domain "mpg" :tld "de" :words ["karthik"] :email "karthik@kyb.tuebingen.mpg.de"} (get-feature-input  "karthik@kyb.tuebingen.mpg.de"  nil)))))
+
+(deftest test-feature-extraction 
+  (testing "complete feature extraction"
+    (is (> (classify "karthik@kyb.tuebingen.mpg.de" 10 10 "Karthik Kumara") 0) )
+    (is (< (classify "admin@amazon.com" 0 0 nil) 0) )
+))
