@@ -1,6 +1,5 @@
-(ns pento-clojure.feature-extraction
+(ns zolo.pento.feature-extraction
   (:require [clojure.string :as str]))
-
 
 
 (defn read-db-file [data-fl]
