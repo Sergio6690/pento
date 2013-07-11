@@ -1,6 +1,6 @@
-(ns pento-clojure.feature-extraction-test
+(ns zolo.pento.feature-extraction-test
   (:require [clojure.test :refer :all]
-            [pento-clojure.feature-extraction :refer :all]))
+            [zolo.pento.feature-extraction :refer :all]))
 
 
 (deftest test-cleaning-id 
