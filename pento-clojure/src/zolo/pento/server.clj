@@ -2,10 +2,14 @@
   (:use zolo.utils.debug
         zolo.utils.clojure)
   (:require [zolo.pento.feature-extraction :as fex]
-            [clojure.data.json :as json]))
+            [clojure.data.json :as json]
+            [zolo.utils.logger :as logger]))
 
-(defn classify-each [{:keys [email name received_count sent_count]}]
-  {email (fex/classify email sent_count received_count name)})
+(defn classify-each [{:keys [email name received_count sent_count] :as email-info}]  
+  {email (try (fex/classify email sent_count received_count name)
+              (catch Exception e
+                (logger/error (str "Pento error processing" email-info) e)
+                (float 0.0)))})
 
 (defn classify-batch [batch]
   (map classify-each batch))

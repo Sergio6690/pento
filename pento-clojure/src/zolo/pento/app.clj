@@ -1,4 +1,5 @@
 (ns zolo.pento.app
+  (:gen-class)
   (:use zolo.utils.debug
         compojure.core
         ring.adapter.jetty
@@ -22,3 +23,9 @@
        (web/wrap-error-handling
         (web/wrap-jsonify
          APP-ROUTES))))))))
+
+(defn start-pento
+  ([]
+     (start-pento 8000))
+  ([port]
+     (run-jetty (var app) {:port port :join? false})))
