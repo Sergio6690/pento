@@ -9,17 +9,39 @@
             [ring.middleware.keyword-params :as kw-params-mw]            
             [ring.middleware.json-params :as json-params]
             [ring.middleware.nested-params :as nested-params-mw]
-            [zolo.utils.web :as web]))
+            [zolo.utils.web :as web]
+            [zolo.utils.calendar :as zolo-cal]))
+
+(def RANDOM-PROCESS-ID (java.util.UUID/randomUUID))
+
+(def PROCESS-COUNTER (atom 0))
 
 (defroutes APP-ROUTES
   (POST "/classify" [emails :as {params :params}] (server/classify emails)))
+
+(defn trace-id [request]
+  (str ".env-producton" 
+       ".h-" (:host request)
+       ".rh-" RANDOM-PROCESS-ID
+       ".c-" @PROCESS-COUNTER
+       ".ts-" (zolo-cal/now)  
+       ".v-" (or (.get (System/getenv) "GIT_HEAD_SHA") "GIT-SHA-NOT-SET")))
+
+(defn logging-context [request]
+  (swap! PROCESS-COUNTER inc)
+  (merge
+   (select-keys request [:request-method :query-string :uri :server-name])
+   {:trace-id (trace-id request)
+    :env "production"
+    :facility "pento"
+    :ip-address (get-in request [:headers "x-real-ip"])}))
 
 (def app
   (params-mw/wrap-params
    (nested-params-mw/wrap-nested-params
     (json-params/wrap-json-params
      (kw-params-mw/wrap-keyword-params
-      (web/wrap-request-logging
+      (web/wrap-request-logging (constantly true) logging-context
        (web/wrap-error-handling
         (web/wrap-jsonify
          APP-ROUTES))))))))
