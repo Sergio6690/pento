@@ -92,7 +92,7 @@
   (testing "complete feature extraction"
     (is (> (classify "karthik@kyb.tuebingen.mpg.de" 10 10 "Karthik Kumara") 0) )
     (is (< (classify "admin@amazon.com" 0 0 nil) 0) )
-    (is (< (classify "info@meetup.com" 0 0 nil) 0) )
-    (println (classify "info@meetup.com" 0 0 nil))
+    (is (< (classify "info@meetup.com" 0 137 "Meetup") 0) )
+    (println (classify "info@meetup.com" 0 137 nil))
     ;(is (= true false))
 ))

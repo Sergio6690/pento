@@ -177,7 +177,7 @@
   (let [input (get-feature-input email name)
         features (map #(to-int (% input)) [has-name, has-word has-any-name are-all-names has-any-word are-all-words is-group-email is-common-email-host is-org-edu-tld domain-in-id-or-id-in-domain has-number-in-id has-subdomins])
         weights (map  weights [:has-name :has-word :has-any-name :are-all-names :has-any-word :are-all-words :is-group-email :is-common-email-host :is-org-edu-tld :domain-in-id-or-id-in-domain :has-number-in-id :has-subdomins :sent :recvd :has-name-given :intercept ])
-        all-features (merge features sent recd (if name 1 0) 1)
+        all-features (merge features (log1+ sent) (log1+ recd) (if name 1 0) 1)
         ]  (dot all-features weights)))
           
 
