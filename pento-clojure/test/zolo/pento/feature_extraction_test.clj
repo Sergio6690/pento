@@ -84,15 +84,18 @@
     (is (= true (domain-in-id-or-id-in-domain {:id "attuverse" :domain "att" :words ["attuverse" ]})))
 ))
 
+
+
 (deftest test-input-to-features 
   (testing "input to features"
     (is (= {:id "karthik" :domain "mpg" :tld "de" :words ["karthik"] :email "karthik@kyb.tuebingen.mpg.de"} (get-feature-input  "karthik@kyb.tuebingen.mpg.de"  nil)))))
 
 (deftest test-feature-extraction 
   (testing "complete feature extraction"
-    (is (> (classify "karthik@kyb.tuebingen.mpg.de" 10 10 "Karthik Kumara") 0) )
+    (is (> (classify "karthik@kyb.tuebingen.mpg.de" 10 0 "Karthik Kumara") 0) )
     (is (< (classify "admin@amazon.com" 0 0 nil) 0) )
-    (is (< (classify "info@meetup.com" 0 137 "Meetup") 0) )
-    (println (classify "info@meetup.com" 0 137 nil))
-    ;(is (= true false))
+    (is (< (classify "info@meetup.com" 0 0 "Meet up") 0) )
+    (is (> (classify "amitrathore@meetup.com" 0 0 "Amit rathore") 0) )
+    (println (classify "info@meetup.com" 0 137 "Meetup"))
+   ;(is (= true false))
 ))
