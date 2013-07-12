@@ -10,7 +10,8 @@
             [ring.middleware.json-params :as json-params]
             [ring.middleware.nested-params :as nested-params-mw]
             [zolo.utils.web :as web]
-            [zolo.utils.calendar :as zolo-cal]))
+            [zolo.utils.calendar :as zolo-cal]
+            [clojure.tools.cli :as cli]))
 
 (def RANDOM-PROCESS-ID (java.util.UUID/randomUUID))
 
@@ -51,3 +52,17 @@
      (start-pento 8000))
   ([port]
      (run-jetty (var app) {:port port :join? false})))
+
+
+(defn process-args [args]
+  (cli/cli args
+           ["-p" "--port" "Listen on this port" :default 8000  :parse-fn #(Integer. %)] 
+           ["-h" "--help" "Show help" :default false :flag true]))
+
+(defn -main [& cl-args]
+  (print-vals "CL Args :" cl-args)
+  (let [[options args banner] (process-args cl-args)]
+    (when (:help options)
+      (println banner)
+      (System/exit 0))
+    (start-pento (:port options))))

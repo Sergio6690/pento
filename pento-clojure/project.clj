@@ -9,7 +9,32 @@
                  [ring/ring-core "1.2.0-beta1"]
                  [fuziontech/ring-json-params "0.2.0"]
                  [ring-serve "0.1.2"]
-                 [clj-http "0.5.3"]]
+                 [clj-http "0.5.3"]
+
+                  ;;Logging Related Stuff
+                 [org.clojure/tools.logging "0.2.4"]
+                 [ch.qos.logback/logback-classic "1.0.7"]
+                 [ch.qos.logback/logback-core "1.0.6"]
+                 [ch.qos.logback.contrib/logback-json-classic "0.1.2"]
+                 [ch.qos.logback.contrib/logback-jackson "0.1.2"]
+                 [org.codehaus.jackson/jackson-core-asl "1.9.12"]
+                 [com.fasterxml.jackson.core/jackson-databind "2.2.2"]
+                 [org.slf4j/slf4j-api "1.7.0"]
+                 [clj-logging-config "1.9.10" :exclusions [log4j]]
+
+                 [org.clojure/tools.cli "0.2.2"]]
+
+  :exclusions [org.clojure/clojure
+               org.slf4j/slf4j-log4j12
+               org.slf4j/slf4j-api
+               org.slf4j/slf4j-nop
+               log4j/log4j
+               log4j
+               org.netflix.curator/curator-framework
+               commons-logging/commons-logging
+               org.clojure/tools.logging
+               org.clojure/clojure-contrib]
+
 
   :profiles {:dev {:dependencies [[clj-stacktrace "0.2.4"]
                                   [ring-serve "0.1.2"]
