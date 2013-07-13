@@ -17,8 +17,15 @@
 
 (def PROCESS-COUNTER (atom 0))
 
+(defn status [request-params]
+  {:status 200
+   :body {:working true}})
+
 (defroutes APP-ROUTES
-  (POST "/classify" [emails :as {params :params}] (server/classify emails)))
+  (POST "/classify" [emails :as {params :params}] (server/classify emails))
+
+  ;;GENERAL
+  (GET "/server/status" {params :params} (status params)))
 
 (defn trace-id [request]
   (str ".env-producton" 
