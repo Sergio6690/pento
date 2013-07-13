@@ -21,6 +21,9 @@
   {:status 200
    :body {:working true}})
 
+(defn not-ignore-logging? [request]
+  (nil? (#{"/server/status"} (:uri request))))
+
 (defroutes APP-ROUTES
   (POST "/classify" [emails :as {params :params}] (server/classify emails))
 
@@ -49,7 +52,7 @@
    (nested-params-mw/wrap-nested-params
     (json-params/wrap-json-params
      (kw-params-mw/wrap-keyword-params
-      (web/wrap-request-logging (constantly true) logging-context
+      (web/wrap-request-logging not-ignore-logging? logging-context
        (web/wrap-error-handling
         (web/wrap-jsonify
          APP-ROUTES))))))))
