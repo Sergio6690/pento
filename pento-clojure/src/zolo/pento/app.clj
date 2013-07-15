@@ -52,7 +52,12 @@
    (nested-params-mw/wrap-nested-params
     (json-params/wrap-json-params
      (kw-params-mw/wrap-keyword-params
-      (web/wrap-request-logging not-ignore-logging? logging-context
+      (web/wrap-request-logging not-ignore-logging?
+                                logging-context
+                                #(-> %
+                                     (dissoc :params)
+                                     (assoc :json-params "LOTS_OF_EMAILS"))
+                                #(assoc % :body "EMAILS_SCORES") 
        (web/wrap-error-handling
         (web/wrap-jsonify
          APP-ROUTES))))))))
