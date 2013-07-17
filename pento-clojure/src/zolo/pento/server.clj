@@ -8,7 +8,7 @@
 (defn classify-each [{:keys [email name received_count sent_count] :as email-info}]  
   {email (try (fex/classify email sent_count received_count name)
               (catch Exception e
-                (logger/error (str "Pento error processing" email-info) e)
+                (logger/error e (str "Pento error processing" email-info))
                 (float 0.0)))})
 
 (defn classify-batch [batch]
