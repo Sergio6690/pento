@@ -96,6 +96,10 @@
     (is (< (classify "admin@amazon.com" 0 0 nil) 0) )
     (is (< (classify "info@meetup.com" 0 0 "Meet up") 0) )
     (is (> (classify "amitrathore@meetup.com" 0 0 "Amit rathore") 0) )
-    (println (classify "info@meetup.com" 0 137 "Meetup"))
-   ;(is (= true false))
+    (is (< (classify "support@manning.com" 0 0 "Support") 0))
+    (is (< (classify "orient-express@news.orient-express.com" 0 0 "Orient Express") 0))
+    (is (< (classify "geeks@geekli.st" 0 0 nil) 0))
+
+    (println (classify "info@robertbialevineyards.com" 3 7 nil ))
+   #_(is (= true false))
 ))

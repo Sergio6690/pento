@@ -1,4 +1,5 @@
 (ns zolo.pento.feature-extraction
+  (:require [cheshire.core :as json])
   (:require [clojure.string :as str]))
 
 
@@ -93,7 +94,7 @@
 
 
 (defn has-name [{id :id}]
-  (let [id (soundex id)](or (is-in-index all-names-soundex id)
+  (let [id (soundex id)](or (is-in-index all-names-soundex id)         
       (is-in-index all-names-soundex (.substring id 1))
       (is-in-index all-names-soundex (.substring id 0 (dec (.length id)))))))
 
@@ -133,8 +134,7 @@
    (some #{domain} (set words))
    (> (.indexOf domain id) -1)
    (> (.indexOf id domain) -1)
-   (some #(> (.indexOf domain %) -1) words)
-   )))
+   (some #(> (.indexOf domain %) -1) words))))
 
 (defn has-number-in-id [{id :id}]
   (boolean (re-find #"[0-9]" id)))
@@ -168,15 +168,45 @@
 (defn to-int [bool]
   (if bool 1 0))
 
-(def weights {:has-name 1.085958,:has-word 1.472036e-04,:has-any-name 3.376846e-01,:are-all-names 4.140926e-01,:has-any-word -3.370337e-01,:are-all-words -5.085958e-01,:is-group-email -3.266195e+00,:is-common-email-host 1.662579e+00,:is-org-edu-tld 0.000000e+00,:domain-in-id-or-id-in-domain -3.379769e-01,:has-number-in-id -1.032386e-03,:has-subdomins 5.353531e-05,:sent 6.135196e-01,:recvd -2.246330e-04,:has-name-given 5.085958e-01, :intercept -1.016358})
+#_(def weights {:has-name 1.085958,:has-word 1.472036e-04,:has-any-name 3.376846e-01,:are-all-names 4.140926e-01,:has-any-word -3.370337e-01,:are-all-words -5.085958e-01,:is-group-email -3.266195e+00,:is-common-email-host 1.662579e+00,:is-org-edu-tld 0.000000e+00,:domain-in-id-or-id-in-domain -3.379769e-01,:has-number-in-id -1.032386e-03,:has-subdomins 5.353531e-05,:sent 6.135196e-01,:recvd -2.246330e-04,:has-name-given 5.085958e-01, :intercept -1.016358})
+
+(def weights { :intercept 0.736386460501176 :has-name 0.12012338097327 :has-word -0.372218346057325 :has-any-name 0.84251022530397 :are-all-names 0.58032225004523 :has-any-word -0.794262281276281 :are-all-words -2.11336613050202 :is-group-email -1.98665165879241 :is-common-email-host 1.15571782717454 :is-org-edu-tld -0.422957730208069 :domain-in-id-or-id-in-domain -0.765263404972649 :has-number-in-id -1.15565369304306 :has-subdomins -0.0981245126605303 :sent 0.674154081035754 :recvd -0.154445790801934 :has-name-given -0.0137261598988324})
 
 (defn dot [v1 v2]
   (apply + (map * v1 v2)))
 
+(defn get-features [email sent recd name]
+        (concat (map #(to-int (% (get-feature-input email name))) [has-name, has-word has-any-name are-all-names has-any-word are-all-words is-group-email is-common-email-host is-org-edu-tld domain-in-id-or-id-in-domain has-number-in-id has-subdomins]) [(log1+ sent) (log1+ recd) (if name 1 0) 1]))
+
+(def feature-names [:has-name :has-word :has-any-name :are-all-names :has-any-word :are-all-words :is-group-email :is-common-email-host :is-org-edu-tld :domain-in-id-or-id-in-domain :has-number-in-id :has-subdomins :sent :recvd :has-name-given :intercept ])
+
 (defn classify [email sent recd name] 
-  (let [input (get-feature-input email name)
-        features (map #(to-int (% input)) [has-name, has-word has-any-name are-all-names has-any-word are-all-words is-group-email is-common-email-host is-org-edu-tld domain-in-id-or-id-in-domain has-number-in-id has-subdomins])
-        weights (map  weights [:has-name :has-word :has-any-name :are-all-names :has-any-word :are-all-words :is-group-email :is-common-email-host :is-org-edu-tld :domain-in-id-or-id-in-domain :has-number-in-id :has-subdomins :sent :recvd :has-name-given :intercept ])
-        all-features (concat features [(log1+ sent) (log1+ recd) (if name 1 0) 1])
-        ]  (dot all-features weights)))
+  (let [features (get-features email sent recd name)
+        weights (map  weights feature-names)] 
+    (dot features weights)))
         
+; Feature extraction from a big json file
+
+(defn features-from-json [{email "email"  name "name"  sent "sent_count" recd "received_count"}]
+  (get-features email sent recd name))
+
+(defn features-to-header []
+  (str (str/join "\t" (concat (map name feature-names) ["y"])) "\n"))
+
+(defn flip [f] (fn [a b] (f b a)))
+
+(defn extract-features [in-file out-file y]
+  (->> 
+   in-file
+   slurp
+   str/split-lines
+   (map json/parse-string)
+   (map features-from-json)
+   (map (partial (flip concat) [y]))
+   (map (partial str/join "\t"))
+   (str/join "\n")
+   (spit out-file)))
+
+(defn -main [in out y]
+  (if (= in "header") (spit out (features-to-header))
+  (extract-features in out y)))

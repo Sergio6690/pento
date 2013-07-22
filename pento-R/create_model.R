@@ -1,0 +1,16 @@
+library(e1071)
+tr = read.csv('./output-data/train.csv',sep='\t')
+ts = read.csv('./output-data/test.csv',sep='\t')
+m = svm(y~. - intercept, data=tr,  type='C-classification', kernel="linear", scale=FALSE, cross=5, cost=5)
+r = sweep(m$SV,MARGIN=1,m$coefs,`*`)
+w = colSums(r)
+intercept = m$rho
+
+print("5 Fold Cross Validation Accuracies")
+print(m$accuracies)
+p = predict(m,ts, type='response')
+print("error matrix on test dataset")
+print(table(p, ts$y))
+write.table(w,file='coeffs.csv')
+print("***********  MODEL *************** ")
+print(paste(":intercept", intercept))

@@ -1,0 +1,16 @@
+"x"
+"has.name" 0.12012338097327
+"has.word" -0.372218346057325
+"has.any.name" 0.84251022530397
+"are.all.names" 0.58032225004523
+"has.any.word" -0.794262281276281
+"are.all.words" -2.11336613050202
+"is.group.email" -1.98665165879241
+"is.common.email.host" 1.15571782717454
+"is.org.edu.tld" -0.422957730208069
+"domain.in.id.or.id.in.domain" -0.765263404972649
+"has.number.in.id" -1.15565369304306
+"has.subdomins" -0.0981245126605303
+"sent" 0.674154081035754
+"recvd" -0.154445790801934
+"has.name.given" -0.0137261598988324
