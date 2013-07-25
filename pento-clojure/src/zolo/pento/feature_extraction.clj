@@ -176,7 +176,8 @@
   (apply + (map * v1 v2)))
 
 (defn get-features [email sent recd name]
-        (concat (map #(to-int (% (get-feature-input email name))) [has-name, has-word has-any-name are-all-names has-any-word are-all-words is-group-email is-common-email-host is-org-edu-tld domain-in-id-or-id-in-domain has-number-in-id has-subdomins]) [(log1+ sent) (log1+ recd) (if name 1 0) 1]))
+  (if (= email name) (get-features email sent recd nil)
+      (concat (map #(to-int (% (get-feature-input email name))) [has-name, has-word has-any-name are-all-names has-any-word are-all-words is-group-email is-common-email-host is-org-edu-tld domain-in-id-or-id-in-domain has-number-in-id has-subdomins]) [(log1+ sent) (log1+ recd) (if name 1 0) 1])))
 
 (def feature-names [:has-name :has-word :has-any-name :are-all-names :has-any-word :are-all-words :is-group-email :is-common-email-host :is-org-edu-tld :domain-in-id-or-id-in-domain :has-number-in-id :has-subdomins :sent :recvd :has-name-given :intercept ])
 

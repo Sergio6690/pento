@@ -97,6 +97,7 @@
     (is (< (classify "info@meetup.com" 0 0 "Meet up") 0) )
     (is (> (classify "amitrathore@meetup.com" 0 0 "Amit rathore") 0) )
     (is (< (classify "support@manning.com" 0 0 "Support") 0))
+    (is (< (classify "orders@amazon.com" 0 0 "orders@amazon.com") 0))
     (is (< (classify "orient-express@news.orient-express.com" 0 0 "Orient Express") 0))
     (is (< (classify "geeks@geekli.st" 0 0 nil) 0))
 
