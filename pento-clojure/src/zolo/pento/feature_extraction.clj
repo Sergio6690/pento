@@ -168,10 +168,10 @@
 (defn to-int [bool]
   (if bool 1 0))
 
-#_(def weights {:has-name 1.085958,:has-word 1.472036e-04,:has-any-name 3.376846e-01,:are-all-names 4.140926e-01,:has-any-word -3.370337e-01,:are-all-words -5.085958e-01,:is-group-email -3.266195e+00,:is-common-email-host 1.662579e+00,:is-org-edu-tld 0.000000e+00,:domain-in-id-or-id-in-domain -3.379769e-01,:has-number-in-id -1.032386e-03,:has-subdomins 5.353531e-05,:sent 6.135196e-01,:recvd -2.246330e-04,:has-name-given 5.085958e-01, :intercept -1.016358})
 
-(def weights { :intercept 0.736386460501176 :has-name 0.12012338097327 :has-word -0.372218346057325 :has-any-name 0.84251022530397 :are-all-names 0.58032225004523 :has-any-word -0.794262281276281 :are-all-words -2.11336613050202 :is-group-email -1.98665165879241 :is-common-email-host 1.15571782717454 :is-org-edu-tld -0.422957730208069 :domain-in-id-or-id-in-domain -0.765263404972649 :has-number-in-id -1.15565369304306 :has-subdomins -0.0981245126605303 :sent 0.674154081035754 :recvd -0.154445790801934 :has-name-given -0.0137261598988324})
+#_(def weights { :intercept 0.736386460501176 :has-name 0.12012338097327 :has-word -0.372218346057325 :has-any-name 0.84251022530397 :are-all-names 0.58032225004523 :has-any-word -0.794262281276281 :are-all-words -2.11336613050202 :is-group-email -1.98665165879241 :is-common-email-host 1.15571782717454 :is-org-edu-tld -0.422957730208069 :domain-in-id-or-id-in-domain -0.765263404972649 :has-number-in-id -1.15565369304306 :has-subdomins -0.0981245126605303 :sent 0.674154081035754 :recvd -0.154445790801934 :has-name-given -0.0137261598988324})
 
+(def weights {:intercept 0.453636017354359 :has-name -0.422172377691535 :has-word -0.44124763494743 :has-any-name 0.704798849649839 :are-all-names 0.920238900092254 :has-any-word -1.17323082039368 :are-all-words -2.27009095810316 :is-group-email -1.92195593270195 :is-common-email-host 1.18079986604694 :is-org-edu-tld -0.870156000697815 :domain-in-id-or-id-in-domain -0.661732818124437 :has-number-in-id -1.10263853776336 :has-subdomins -0.344385667250954 :sent 0.749700328613383 :recvd -0.240856777243847 :has-name-given 0.493335492041221 })
 (defn dot [v1 v2]
   (apply + (map * v1 v2)))
 
